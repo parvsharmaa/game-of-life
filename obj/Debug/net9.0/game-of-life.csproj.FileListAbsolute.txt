@@ -1,0 +1,14 @@
+/Users/parv/Documents/game-of-life/obj/Debug/net9.0/game-of-life.GeneratedMSBuildEditorConfig.editorconfig
+/Users/parv/Documents/game-of-life/obj/Debug/net9.0/game-of-life.AssemblyInfoInputs.cache
+/Users/parv/Documents/game-of-life/obj/Debug/net9.0/game-of-life.AssemblyInfo.cs
+/Users/parv/Documents/game-of-life/obj/Debug/net9.0/game-of-life.csproj.CoreCompileInputs.cache
+/Users/parv/Documents/game-of-life/bin/Debug/net9.0/game-of-life
+/Users/parv/Documents/game-of-life/bin/Debug/net9.0/game-of-life.deps.json
+/Users/parv/Documents/game-of-life/bin/Debug/net9.0/game-of-life.runtimeconfig.json
+/Users/parv/Documents/game-of-life/bin/Debug/net9.0/game-of-life.dll
+/Users/parv/Documents/game-of-life/bin/Debug/net9.0/game-of-life.pdb
+/Users/parv/Documents/game-of-life/obj/Debug/net9.0/game-of-life.dll
+/Users/parv/Documents/game-of-life/obj/Debug/net9.0/refint/game-of-life.dll
+/Users/parv/Documents/game-of-life/obj/Debug/net9.0/game-of-life.pdb
+/Users/parv/Documents/game-of-life/obj/Debug/net9.0/game-of-life.genruntimeconfig.cache
+/Users/parv/Documents/game-of-life/obj/Debug/net9.0/ref/game-of-life.dll

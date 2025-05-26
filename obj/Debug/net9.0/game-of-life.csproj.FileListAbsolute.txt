@@ -12,3 +12,4 @@
 /Users/parv/Documents/game-of-life/obj/Debug/net9.0/game-of-life.pdb
 /Users/parv/Documents/game-of-life/obj/Debug/net9.0/game-of-life.genruntimeconfig.cache
 /Users/parv/Documents/game-of-life/obj/Debug/net9.0/ref/game-of-life.dll
+/Users/parv/Documents/game-of-life/obj/Debug/net9.0/game-of-life.sourcelink.json

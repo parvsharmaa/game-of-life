@@ -24,21 +24,6 @@ public sealed class OutputRenderer
         }
     }
 
-    public string RenderToString(GameGrid grid)
-    {
-        ArgumentNullException.ThrowIfNull(grid);
-        
-        _outputBuffer.Clear();
-        var sortedCells = grid.GetSortedLiveCells();
-        
-        foreach (var cell in sortedCells)
-        {
-            _outputBuffer.AppendLine(cell.ToString());
-        }
-        
-        return _outputBuffer.ToString().TrimEnd();
-    }
-
     public string RenderStatistics(GameGrid grid)
     {
         ArgumentNullException.ThrowIfNull(grid);

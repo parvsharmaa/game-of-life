@@ -2,61 +2,69 @@ using GameOfLife.Models;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace GameOfLife.Core;
-
-public class GameOfLifeEngine
+namespace GameOfLife.Core
 {
-    private static readonly (int dx, int dy)[] Neighbors =
+    public class GameOfLifeEngine
     {
-        (-1, -1), (-1, 0), (-1, 1),
-        ( 0, -1),          ( 0, 1),
-        ( 1, -1), ( 1, 0), ( 1, 1)
-    };
-
-    public HashSet<Coordinate> Tick(HashSet<Coordinate> currentGen)
-    {
-        var candidates = GatherCandidates(currentGen);
-        var neighborCounts = CountNeighbors(currentGen, candidates);
-        return ComputeNextGeneration(currentGen, neighborCounts);
-    }
-
-    private static HashSet<Coordinate> GatherCandidates(HashSet<Coordinate> live)
-    {
-        var all = new HashSet<Coordinate>(live);
-        foreach (var coord in live)
+        private readonly (int dx, int dy)[] _neighbors = 
         {
-            foreach (var (dx, dy) in Neighbors)
-                all.Add(new Coordinate(coord.X + dx, coord.Y + dy));
+            (-1, -1), (-1, 0), (-1, 1),
+            ( 0, -1),          ( 0, 1),
+            ( 1, -1), ( 1, 0), ( 1, 1)
+        };
+
+        public HashSet<Cell> Tick(HashSet<Cell> currentGeneration)
+        {
+            var candidateCells = GatherCandidateCells(currentGeneration);
+            var nextGeneration = ComputeNextGeneration(candidateCells);
+            return nextGeneration;
         }
-        return all;
-    }
 
-    private static Dictionary<Coordinate, int> CountNeighbors(HashSet<Coordinate> live, HashSet<Coordinate> candidates)
-    {
-        var counts = candidates.ToDictionary(c => c, _ => 0);
-        foreach (var coord in live)
+        private HashSet<Cell> GatherCandidateCells(HashSet<Cell> liveCells)
         {
-            foreach (var (dx, dy) in Neighbors)
+            var candidates = new HashSet<Cell>(liveCells);
+            
+            foreach (var cell in liveCells)
             {
-                var neighbor = new Coordinate(coord.X + dx, coord.Y + dy);
-                if (counts.ContainsKey(neighbor))
-                    counts[neighbor]++;
+                foreach (var (dx, dy) in _neighbors)
+                {
+                    var neighborCoord = new Coordinate(cell.Coord.X + dx, cell.Coord.Y + dy);
+                    candidates.Add(new Cell(neighborCoord, false));
+                }
             }
+            
+            return candidates;
         }
-        return counts;
-    }
 
-    private static HashSet<Coordinate> ComputeNextGeneration(HashSet<Coordinate> live, Dictionary<Coordinate, int> counts)
-    {
-        var next = new HashSet<Coordinate>();
-        foreach (var (coord, count) in counts)
+        private HashSet<Cell> ComputeNextGeneration(HashSet<Cell> candidateCells)
         {
-            if (ShouldLive(live.Contains(coord), count))
-                next.Add(coord);
+            var nextGeneration = new HashSet<Cell>();
+            
+            foreach (var cell in candidateCells)
+            {
+                var liveNeighborCount = CountLiveNeighbors(cell.Coord, candidateCells);
+                var shouldLive = ShouldCellLive(cell.IsAlive, liveNeighborCount);
+                
+                if (shouldLive)
+                {
+                    nextGeneration.Add(new Cell(cell.Coord, true));
+                }
+            }
+            
+            return nextGeneration;
         }
-        return next;
-    }
 
-    private static bool ShouldLive(bool isAlive, int neighbors)
-        => neighbors == 3 || (isAlive && neighbors == 2);
+        private int CountLiveNeighbors(Coordinate coord, HashSet<Cell> cells)
+        {
+            return _neighbors
+                .Select(n => new Coordinate(coord.X + n.dx, coord.Y + n.dy))
+                .Count(neighborCoord => 
+                    cells.Any(c => c.Coord.Equals(neighborCoord) && c.IsAlive));
+        }
+
+        private bool ShouldCellLive(bool isAlive, int liveNeighborCount)
+        {
+            return liveNeighborCount == 3 || (isAlive && liveNeighborCount == 2);
+        }
+    }
 }

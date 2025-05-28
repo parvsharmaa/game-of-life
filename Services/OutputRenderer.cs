@@ -3,13 +3,21 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace GameOfLife.Services;
-
-public static class OutputRenderer
+namespace GameOfLife.Services
 {
-    public static void Render(IEnumerable<Coordinate> coords)
+    public static class OutputRenderer
     {
-        foreach (var c in coords.OrderBy(c => c.X).ThenBy(c => c.Y))
-            Console.WriteLine($"{c.X}, {c.Y}");
+        public static void Render(IEnumerable<Cell> cells)
+        {
+            var aliveCells = cells
+                .Where(c => c.IsAlive)
+                .OrderBy(c => c.Coord.X)
+                .ThenBy(c => c.Coord.Y);
+                
+            foreach (var cell in aliveCells)
+            {
+                Console.WriteLine($"{cell.Coord.X}, {cell.Coord.Y}");
+            }
+        }
     }
 }

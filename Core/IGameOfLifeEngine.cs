@@ -4,5 +4,5 @@ namespace GameOfLife.Core;
 
 public interface IGameOfLifeEngine
 {
-    HashSet<Coordinate> ComputeNextGeneration(HashSet<Coordinate> liveCells);
+    GameGrid EvolveGeneration(GameGrid currentGrid);
 }

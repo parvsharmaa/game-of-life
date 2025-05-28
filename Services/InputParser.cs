@@ -3,60 +3,92 @@ using System.Globalization;
 
 namespace GameOfLife.Services;
 
-public sealed class InputParser : IInputParser
+public sealed class InputParser
 {
-    public HashSet<Coordinate> ParseCoordinates(IEnumerable<string> lines)
+    private readonly List<string> _errorMessages;
+    private int _currentLineNumber;
+
+    public InputParser()
+    {
+        _errorMessages = new List<string>();
+    }
+
+    public IReadOnlyList<string> ErrorMessages => _errorMessages.AsReadOnly();
+
+    public GameGrid ParseToGameGrid(IEnumerable<string> lines)
     {
         ArgumentNullException.ThrowIfNull(lines);
         
-        var coordinates = new HashSet<Coordinate>();
-        var lineNumber = 0;
+        _errorMessages.Clear();
+        _currentLineNumber = 0;
+        
+        var coordinates = new List<Coordinate>();
         
         foreach (var line in lines)
         {
-            lineNumber++;
+            _currentLineNumber++;
             
             if (string.IsNullOrWhiteSpace(line))
                 continue;
                 
-            try
+            if (TryParseLine(line.Trim(), out var coordinate))
             {
-                var coordinate = ParseSingleLine(line.Trim());
                 coordinates.Add(coordinate);
             }
-            catch (Exception ex) when (ex is not GameOfLifeInputException)
-            {
-                throw new GameOfLifeInputException(
-                    $"Invalid format at line {lineNumber}: '{line}'. Expected format: 'x, y'", 
-                    ex);
-            }
         }
         
-        return coordinates;
+        if (_errorMessages.Count > 0)
+        {
+            var combinedErrors = string.Join(Environment.NewLine, _errorMessages);
+            throw new GameOfLifeInputException($"Input parsing failed:{Environment.NewLine}{combinedErrors}");
+        }
+        
+        return new GameGrid(coordinates);
     }
 
-    private static Coordinate ParseSingleLine(string line)
+    private bool TryParseLine(string line, out Coordinate coordinate)
     {
-        var parts = line.Split(',', StringSplitOptions.TrimEntries);
+        coordinate = default;
         
-        if (parts.Length != 2)
+        try
         {
-            throw new GameOfLifeInputException(
-                $"Invalid coordinate format: '{line}'. Expected exactly two values separated by comma.");
-        }
+            var parts = line.Split(',', StringSplitOptions.TrimEntries);
+            
+            if (parts.Length != 2)
+            {
+                AddError($"Invalid format: '{line}'. Expected 'x, y'");
+                return false;
+            }
 
-        if (!int.TryParse(parts[0], NumberStyles.Integer, CultureInfo.InvariantCulture, out var x))
+            if (!int.TryParse(parts[0], NumberStyles.Integer, CultureInfo.InvariantCulture, out var x))
+            {
+                AddError($"Invalid X coordinate: '{parts[0]}' in line '{line}'");
+                return false;
+            }
+
+            if (!int.TryParse(parts[1], NumberStyles.Integer, CultureInfo.InvariantCulture, out var y))
+            {
+                AddError($"Invalid Y coordinate: '{parts[1]}' in line '{line}'");
+                return false;
+            }
+
+            coordinate = Coordinate.Create(x, y);
+            return true;
+        }
+        catch (ArgumentOutOfRangeException ex)
         {
-            throw new GameOfLifeInputException(
-                $"Invalid X coordinate: '{parts[0]}'. Must be a valid integer.");
+            AddError($"Coordinate out of range in line '{line}': {ex.Message}");
+            return false;
         }
-
-        if (!int.TryParse(parts[1], NumberStyles.Integer, CultureInfo.InvariantCulture, out var y))
+        catch (Exception ex)
         {
-            throw new GameOfLifeInputException(
-                $"Invalid Y coordinate: '{parts[1]}'. Must be a valid integer.");
+            AddError($"Unexpected error parsing line '{line}': {ex.Message}");
+            return false;
         }
+    }
 
-        return Coordinate.Create(x, y);
+    private void AddError(string message)
+    {
+        _errorMessages.Add($"Line {_currentLineNumber}: {message}");
     }
 }

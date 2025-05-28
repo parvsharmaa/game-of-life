@@ -16,9 +16,9 @@ internal static class Program
         try
         {
             var inputLines = ReadInputLines();
-            var gameOfLifeService = CreateGameOfLifeService();
+            var application = CreateApplication();
             
-            gameOfLifeService.ProcessSingleGeneration(inputLines);
+            application.ProcessSingleGeneration(inputLines);
             
             return (int)ExitCode.Success;
         }
@@ -51,12 +51,9 @@ internal static class Program
         return lines;
     }
 
-    private static GameOfLifeService CreateGameOfLifeService()
+    private static GameOfLifeApplication CreateApplication()
     {
         var engine = new GameOfLifeEngine();
-        var inputParser = new InputParser();
-        var outputRenderer = new OutputRenderer();
-        
-        return new GameOfLifeService(engine, inputParser, outputRenderer);
+        return new GameOfLifeApplication(engine);
     }
 }

@@ -1,19 +1,48 @@
 using GameOfLife.Models;
+using System.Text;
 
 namespace GameOfLife.Services;
 
-public sealed class OutputRenderer : IOutputRenderer
+public sealed class OutputRenderer
 {
-    public void RenderCoordinates(HashSet<Coordinate> coordinates)
+    private readonly StringBuilder _outputBuffer;
+
+    public OutputRenderer()
     {
-        ArgumentNullException.ThrowIfNull(coordinates);
+        _outputBuffer = new StringBuilder();
+    }
+
+    public void RenderToConsole(GameGrid grid)
+    {
+        ArgumentNullException.ThrowIfNull(grid);
         
-        var sortedCoordinates = coordinates.ToArray();
-        Array.Sort(sortedCoordinates);
+        var sortedCells = grid.GetSortedLiveCells();
         
-        foreach (var coordinate in sortedCoordinates)
+        foreach (var cell in sortedCells)
         {
-            Console.WriteLine(coordinate.ToString());
+            Console.WriteLine(cell.ToString());
         }
+    }
+
+    public string RenderToString(GameGrid grid)
+    {
+        ArgumentNullException.ThrowIfNull(grid);
+        
+        _outputBuffer.Clear();
+        var sortedCells = grid.GetSortedLiveCells();
+        
+        foreach (var cell in sortedCells)
+        {
+            _outputBuffer.AppendLine(cell.ToString());
+        }
+        
+        return _outputBuffer.ToString().TrimEnd();
+    }
+
+    public string RenderStatistics(GameGrid grid)
+    {
+        ArgumentNullException.ThrowIfNull(grid);
+        
+        return $"Live cells: {grid.LiveCellCount}";
     }
 }

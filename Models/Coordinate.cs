@@ -4,23 +4,31 @@ namespace GameOfLife.Models;
 
 public readonly record struct Coordinate(int X, int Y) : IComparable<Coordinate>
 {
-    public static void ValidateBounds(int x, int y)
-    {
-        const int maxValue = 100_000;
-        const int minValue = -100_000;
-        
-        if (x < minValue || x > maxValue || y < minValue || y > maxValue)
-        {
-            throw new ArgumentOutOfRangeException(
-                nameof(Coordinate),
-                $"Coordinate ({x}, {y}) is outside valid range [{minValue}, {maxValue}]");
-        }
-    }
+    private const int MaxCoordinateValue = 100_000;
+    private const int MinCoordinateValue = -100_000;
 
     public static Coordinate Create(int x, int y)
     {
-        ValidateBounds(x, y);
+        if (x < MinCoordinateValue || x > MaxCoordinateValue || 
+            y < MinCoordinateValue || y > MaxCoordinateValue)
+        {
+            throw new ArgumentOutOfRangeException(
+                nameof(Coordinate),
+                $"Coordinate ({x}, {y}) is outside valid range [{MinCoordinateValue}, {MaxCoordinateValue}]");
+        }
         return new Coordinate(x, y);
+    }
+
+    public IEnumerable<Coordinate> GetNeighbors()
+    {
+        yield return new Coordinate(X - 1, Y - 1);
+        yield return new Coordinate(X - 1, Y);
+        yield return new Coordinate(X - 1, Y + 1);
+        yield return new Coordinate(X, Y - 1);
+        yield return new Coordinate(X, Y + 1);
+        yield return new Coordinate(X + 1, Y - 1);
+        yield return new Coordinate(X + 1, Y);
+        yield return new Coordinate(X + 1, Y + 1);
     }
 
     public int CompareTo(Coordinate other)

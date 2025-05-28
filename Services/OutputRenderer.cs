@@ -1,23 +1,19 @@
 using GameOfLife.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 
-namespace GameOfLife.Services
+namespace GameOfLife.Services;
+
+public sealed class OutputRenderer : IOutputRenderer
 {
-    public static class OutputRenderer
+    public void RenderCoordinates(HashSet<Coordinate> coordinates)
     {
-        public static void Render(IEnumerable<Cell> cells)
+        ArgumentNullException.ThrowIfNull(coordinates);
+        
+        var sortedCoordinates = coordinates.ToArray();
+        Array.Sort(sortedCoordinates);
+        
+        foreach (var coordinate in sortedCoordinates)
         {
-            var aliveCells = cells
-                .Where(c => c.IsAlive)
-                .OrderBy(c => c.Coord.X)
-                .ThenBy(c => c.Coord.Y);
-                
-            foreach (var cell in aliveCells)
-            {
-                Console.WriteLine($"{cell.Coord.X}, {cell.Coord.Y}");
-            }
+            Console.WriteLine(coordinate.ToString());
         }
     }
 }
